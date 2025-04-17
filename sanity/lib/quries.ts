@@ -1,5 +1,5 @@
 // lib/sanity.queries.ts
-import { groq } from 'next-sanity';
+import { groq } from "next-sanity";
 
 // Fetch all post slugs
 export const postPathsQuery = groq`
@@ -35,7 +35,7 @@ export const homePagePostsQuery = groq`
   }
 `;
 
- // Fetch Site Settings (assuming only one instance)
+// Fetch Site Settings (assuming only one instance)
 export const siteSettingsQuery = groq`
   *[_type == "siteSettings"][0] {
     title,
@@ -43,5 +43,16 @@ export const siteSettingsQuery = groq`
     logo {..., alt},
     footerText
     // Add other fields you need
+  }
+`;
+
+export const headerSettingsQuery = groq`
+  *[_type == "headerSettings"][0]{
+    "logo": logo.asset->url,
+    navigationLinks[] {
+      label,
+      href
+    },
+    contactButtonLabel
   }
 `;

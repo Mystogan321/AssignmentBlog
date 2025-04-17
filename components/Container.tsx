@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { DetailedHTMLProps, HTMLAttributes } from "react";
-
 type IProps = DetailedHTMLProps<
   HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
@@ -8,10 +7,9 @@ type IProps = DetailedHTMLProps<
   children?: React.ReactNode;
   defaultClasses?: string;
 };
-
 const Container: React.FC<IProps> = ({
   children,
-  defaultClasses = "2xl:max-w-screen-2xl xl:max-w-screen-xl mx-auto w-full lg:px-[86px] md:px-[48px] sm:px-[24px] px-[16px]",
+  defaultClasses = " mx-auto w-full lg:px-[80px] md:px-[40px] px-[20px]",
   className,
   ...rest
 }) => {
@@ -21,5 +19,4 @@ const Container: React.FC<IProps> = ({
     </div>
   );
 };
-
 export default Container;
