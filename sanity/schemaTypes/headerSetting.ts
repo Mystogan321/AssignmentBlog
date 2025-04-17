@@ -1,31 +1,17 @@
 // sanity/schemaTypes/headerSettings.ts
 import { defineField, defineType } from "sanity";
 
+interface NavLink {
+  label: string;
+  slug: {
+    current: string;
+  };
+}
+
 export default defineType({
   name: "headerSettings",
   title: "Header Settings",
   type: "document",
-  // We'll handle the singleton behavior via the Desk Structure
-  preview: {
-    select: {
-      title: "title",
-      navigationLinks: "navigationLinks",
-      logo: "logo",
-    },
-    prepare(selection: {
-      title?: string;
-      navigationLinks?: any[];
-      logo?: any;
-    }) {
-      const { navigationLinks = [], logo } = selection;
-      const navCount = navigationLinks.length;
-      return {
-        title: "Header Configuration",
-        subtitle: `${navCount} navigation items${logo ? " • Has logo" : " • No logo"}`,
-        media: logo,
-      };
-    },
-  },
   fields: [
     defineField({
       name: "title",
@@ -41,7 +27,7 @@ export default defineType({
         'Upload the site logo. If not provided, the default text logo ("LUX VENTUS") will be used by the component.',
       type: "image",
       options: {
-        hotspot: true, // Enables image cropping/positioning
+        hotspot: true,
       },
     }),
     defineField({
@@ -56,12 +42,12 @@ export default defineType({
           preview: {
             select: {
               label: "label",
-              href: "href",
+              slug: "slug",
             },
-            prepare({ label, href }) {
+            prepare({ label, slug }) {
               return {
                 title: label || "No label",
-                subtitle: href || "No URL",
+                subtitle: slug?.current || "No slug",
               };
             },
           },
@@ -73,9 +59,16 @@ export default defineType({
               validation: (Rule) => Rule.required(),
             },
             {
-              name: "href",
-              title: "Link URL",
-              type: "string",
+              name: "slug",
+              title: "Slug",
+              type: "slug",
+              options: {
+                source: (doc: any, { parent }: { parent: NavLink }) =>
+                  parent?.label,
+                maxLength: 200,
+                slugify: (input) =>
+                  input.toLowerCase().replace(/\s+/g, "-").slice(0, 200),
+              },
               validation: (Rule) => Rule.required(),
             },
           ],
@@ -88,21 +81,7 @@ export default defineType({
       description:
         'Text displayed on the main contact button. If empty, the component default ("Contact Us") will be used.',
       type: "string",
-      // You can set an initial value here if you like, but the component default also works
-      // initialValue: 'Contact Us',
-      validation: (Rule) => Rule.required(), // Make it required in Sanity
+      validation: (Rule) => Rule.required(),
     }),
   ],
-  // Improve preview for the document itself (useful if it ever shows in a list)
-  preview: {
-    select: {
-      title: "contactButtonLabel",
-    },
-    prepare(selection) {
-      const { title } = selection;
-      return {
-        title: title || "Header Settings",
-      };
-    },
-  },
 });

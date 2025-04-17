@@ -15,8 +15,10 @@ const config: Config = {
         "brand-dark": "#262626",
       },
       fontFamily: {
-        heading: ["Cinzel"],
-        body: ["Poppins"],
+        poppins: ["var(--font-poppins)", "sans-serif"],
+        cinzel: ["var(--font-cinzel)", "serif"],
+        body: ["var(--font-poppins)", "sans-serif"],    // for @apply font-body
+        heading: ["var(--font-cinzel)", "serif"],        // for @apply font-heading
       },
       fontWeight: {
         normal: "400",

@@ -22,17 +22,17 @@ const Hero: React.FC<HeroProps> = ({
       <div
         className="relative h-[600px] w-full overflow-hidden rounded-4xl bg-cover bg-center mt-[80px]"
         style={{
-          backgroundImage: `url(${bgImg.src})`,
+          backgroundImage: `url(${backgroundImage || bgImg.src})`,
         }}
       >
         <div className="absolute inset-0 flex flex-col justify-end p-12 pb-16">
-          <span className="font-poppins text-xs text-white tracking-[0.3em] uppercase mb-3">
+          <span className="font-Poppins font- text-xs text-white tracking-[0.3em] uppercase mb-3">
             {magazineTitle}
           </span>
-          <h1 className="font-poppins font-bold text-5xl text-white mb-4">
+          <h1 className="font-cinzel font-bold text-5xl text-white mb-4">
             {title} <span className="text-cyan-300">{highlightedText}</span>
           </h1>
-          <p className="font-poppins font-normal text-lg text-white max-w-md opacity-90">
+          <p className="font-Poppins font-normal text-lg text-white max-w-md opacity-90">
             {content}
           </p>
         </div>

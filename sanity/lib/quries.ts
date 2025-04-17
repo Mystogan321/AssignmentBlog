@@ -51,8 +51,20 @@ export const headerSettingsQuery = groq`
     "logo": logo.asset->url,
     navigationLinks[] {
       label,
-      href
+      "slug": slug.current
     },
     contactButtonLabel
+  }
+`;
+
+// Add this to your lib/sanity.queries.ts file
+
+export const heroSectionQuery = groq`
+  *[_type == "hero"][0] {
+    magazineTitle,
+    title,
+    highlightedText,
+    content,
+    "backgroundImage": backgroundImage.asset->url
   }
 `;

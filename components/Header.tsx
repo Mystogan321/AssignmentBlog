@@ -47,7 +47,7 @@ const Header = ({
             {logoSrc ? (
               <img src={logoSrc} alt="LUX VENTUS" className="h-10" />
             ) : (
-              <div className="font-serif text-3xl tracking-wider font-bold">
+              <div className="font-cinzel text-3xl tracking-wider font-bold">
                 LUX <span className="text-[#4CE0D7]">VENTUS</span>
               </div>
             )}
@@ -60,7 +60,7 @@ const Header = ({
                   <a
                     key={label}
                     href={href}
-                    className="text-gray-800 hover:text-[#4CE0D7] transition-colors font-bold text-base"
+                    className="text-gray-800 hover:text-[#4CE0D7] transition-colors font-Poppins font-bold text-base"
                   >
                     {label}
                   </a>
@@ -72,7 +72,7 @@ const Header = ({
             <div className="hidden md:flex items-center space-x-6">
               <a
                 href="#contact"
-                className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors text-base font-bold"
+                className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors text-base font-Poppins font-bold"
               >
                 {contactLabel}
               </a>
@@ -115,7 +115,7 @@ const Header = ({
               {logoSrc ? (
                 <img src={logoSrc} alt="LUX VENTUS" className="h-10" />
               ) : (
-                <div className="font-serif text-3xl tracking-wider font-bold">
+                <div className="font-cinzel text-3xl tracking-wider font-bold">
                   LUX <span className="text-[#4CE0D7]">VENTUS</span>
                 </div>
               )}
@@ -147,7 +147,7 @@ const Header = ({
                 <a
                   key={label}
                   href={href}
-                  className="text-gray-800 hover:text-[#4CE0D7] transition-colors text-xl font-bold"
+                  className="text-gray-800 hover:text-[#4CE0D7] transition-colors text-xl font-Poppins font-bold"
                   onClick={toggleMenu} // Close menu on link click
                 >
                   {label}
@@ -156,7 +156,7 @@ const Header = ({
               <a
                 href="#contact"
                 // Ensure text color contrasts with background if needed (e.g., text-black or text-white)
-                className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors inline-block w-fit mt-6 text-base font-bold"
+                className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors inline-block w-fit mt-6 text-base font-Poppins font-bold"
                 onClick={toggleMenu} // Close menu on link click
               >
                 {contactLabel}
