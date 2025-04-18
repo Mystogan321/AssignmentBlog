@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * This route is responsible for the built-in authoring environment using Sanity Studio.
  * All routes under your studio path is handled by this file using Next.js' catch-all routes:
@@ -9,11 +7,18 @@
  * https://github.com/sanity-io/next-sanity
  */
 
-import { NextStudio } from "next-sanity/studio";
-import config from "../../../sanity.config";
+import { client } from "@/lib/sanity.client";
 
 export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const topics = await client.fetch(
+    `*[_type == "topicCard"]{ "slug": slug.current }`
+  );
+  return topics;
+}
 
 export default function StudioPage() {
-  return <NextStudio config={config} />;
+  return null; // The layout component handles the rendering
 }

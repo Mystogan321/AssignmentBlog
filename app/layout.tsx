@@ -3,7 +3,12 @@ import "./globals.css";
 import { LayoutContent } from "../components/LayoutContent";
 import type { Metadata } from "next";
 import { client } from "@/lib/sanity.client";
-import { siteSettingsQuery } from "../sanity/lib/quries";
+import {
+  siteSettingsQuery,
+  headerSettingsQuery,
+  heroSectionQuery,
+  topicsSectionQuery,
+} from "../sanity/lib/quries";
 
 // Configure fonts
 const cinzel = Cinzel({
@@ -44,12 +49,22 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Fetch the required data
+  const [headerData, heroData, topicsData] = await Promise.all([
+    client.fetch(headerSettingsQuery).catch(() => null),
+    client.fetch(heroSectionQuery).catch(() => null),
+    client.fetch(topicsSectionQuery).catch(() => null),
+  ]);
+
   return (
     <html lang="en" className={`${cinzel.variable} ${poppins.variable}`}>
       <body className="font-body">
         <LayoutContent
           cinzelVariable={cinzel.variable}
           poppinsVariable={poppins.variable}
+          headerData={headerData}
+          heroData={heroData}
+          topicsData={topicsData}
         >
           {children}
         </LayoutContent>

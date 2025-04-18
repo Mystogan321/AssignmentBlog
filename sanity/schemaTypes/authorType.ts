@@ -1,46 +1,51 @@
-import { UserIcon } from "@sanity/icons";
-import { defineArrayMember, defineField, defineType } from "sanity";
+import { defineField, defineType } from 'sanity'
 
 export default defineType({
-  name: "author",
-  title: "Author",
-  type: "document",
-  icon: UserIcon,
+  name: 'author',
+  title: 'Author',
+  type: 'document',
   fields: [
     defineField({
-      name: "name",
-      type: "string",
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: Rule => Rule.required().error('Author name is required')
     }),
     defineField({
-      name: "slug",
-      type: "slug",
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
       options: {
-        source: "name",
-      },
+        source: 'name',
+        maxLength: 96
+      }
     }),
     defineField({
-      name: "image",
-      type: "image",
+      name: 'image',
+      title: 'Image',
+      type: 'image',
       options: {
-        hotspot: true,
-      },
+        hotspot: true
+      }
     }),
     defineField({
-      name: "bio",
-      type: "array",
+      name: 'bio',
+      title: 'Bio',
+      type: 'array',
       of: [
-        defineArrayMember({
-          type: "block",
-          styles: [{ title: "Normal", value: "normal" }],
-          lists: [],
-        }),
-      ],
-    }),
+        {
+          title: 'Block',
+          type: 'block',
+          styles: [{title: 'Normal', value: 'normal'}],
+          lists: []
+        }
+      ]
+    })
   ],
   preview: {
     select: {
-      title: "name",
-      media: "image",
-    },
-  },
+      title: 'name',
+      media: 'image'
+    }
+  }
 });

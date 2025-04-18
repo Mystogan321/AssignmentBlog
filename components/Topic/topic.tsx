@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import CategoryCard from "./topicCard";
 import Container from "../Container";
+import { useRouter } from "next/navigation";
 
 interface TopicCardData {
   _id: string;
@@ -26,6 +27,7 @@ export default function Topics({
 }: TopicsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsToShow, setCardsToShow] = useState(4); // Default, will adjust based on screen size
+  const router = useRouter();
 
   // Update cards to show based on screen width
   useEffect(() => {
@@ -50,6 +52,10 @@ export default function Topics({
 
   const prevSlide = () => {
     setCurrentIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleCardClick = (slug: string) => {
+    router.push(`/topics/${slug}`);
   };
 
   return (
@@ -102,7 +108,7 @@ export default function Topics({
               <CategoryCard
                 key={topic._id}
                 topicData={topic}
-                onClick={() => onCardClick && onCardClick(topic.slug.current)}
+                onClick={() => handleCardClick(topic.slug.current)}
               />
             ))}
           </div>

@@ -7,23 +7,72 @@ export const postPathsQuery = groq`
   *[_type == "post" && defined(slug.current)][].slug.current
 `;
 
-// Fetch a single post by slug
-export const postBySlugQuery = groq`
+export const postBySlugQuery = `
   *[_type == "post" && slug.current == $slug][0] {
     _id,
-    _createdAt,
     title,
-    "slug": slug.current,
-    author->{name, "slug": slug.current, image{..., alt}},
-    mainImage {..., alt},
-    categories[]->{title, "slug": slug.current},
-    publishedAt,
+    slug,
+    mainImage {
+      asset->{
+        _id,
+        url
+      }
+    },
     body,
-    excerpt
+    excerpt,
+    publishedAt,
+    categories[]->{
+      _id,
+      title
+    },
+    "author": author->{
+      name,
+      image {
+        asset->{
+          _id,
+          url
+        }
+      },
+      bio
+    },
+    specialTag,
+    callToActionText
   }
 `;
 
-// Fetch limited posts for the homepage, ordered by published date
+// GROQ query for posts by category
+export const postsByCategoryQuery = `
+  *[_type == "post" && $categoryId in categories[]._ref] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    excerpt,
+    mainImage {
+      asset->{
+        _id,
+        url
+      }
+    },
+    publishedAt,
+    categories[]->{
+      _id,
+      title
+    },
+    "author": author->{
+      name,
+      image {
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    specialTag,
+    callToActionText,
+    displaySize
+  }
+`;
+
 export const homePagePostsQuery = groq`
   *[_type == "post"] | order(publishedAt desc) [0...6] {
      _id,
@@ -95,3 +144,50 @@ export const topicsSectionQuery = groq`
     }
   }
 `;
+
+export const topicCardBySlugQuery = groq`
+  *[_type == "topicCard" && slug.current == $slug][0] {
+    _id,
+    title,
+    buttonText,
+    image,
+    content,  
+    slug {
+      current
+    }
+  }
+`;
+
+export const allPostsQuery = `
+  *[_type == "post"] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    excerpt,
+    mainImage {
+      asset->{
+        _id,
+        url
+      }
+    },
+    publishedAt,
+    categories[]->{
+      _id,
+      title
+    },
+    "author": author->{
+      name,
+      image {
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    specialTag,
+    displaySize
+  }
+`;
+
+
+

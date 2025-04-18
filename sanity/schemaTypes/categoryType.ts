@@ -1,17 +1,15 @@
-import {defineField, defineType} from 'sanity'
-import {TagIcon} from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
 
 export default defineType({
   name: 'category',
   title: 'Category',
   type: 'document',
-  icon: TagIcon,
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: Rule => Rule.required().error('Category title is required')
     }),
     defineField({
       name: 'slug',
@@ -19,19 +17,13 @@ export default defineType({
       type: 'slug',
       options: {
         source: 'title',
-        maxLength: 96,
-      },
-      validation: (Rule) => Rule.required(),
+        maxLength: 96
+      }
     }),
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'text',
-    }),
-  ],
-   preview: {
-    select: {
-      title: 'title',
-    },
-  },
-})
+      type: 'text'
+    })
+  ]
+});

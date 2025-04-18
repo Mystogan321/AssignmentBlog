@@ -3,15 +3,10 @@
 import { usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { client } from "@/lib/sanity.client";
-import {
-  headerSettingsQuery,
-  heroSectionQuery,
-  topicsSectionQuery,
-} from "@/sanity/lib/quries";
 import Hero from "@/components/Hero";
 import Topics from "@/components/Topic/topic";
+import BlogCard, { CardSize } from "@/components/BlogCard";
+import { Post } from "@/components/BlogCard";
 
 interface HeaderSettings {
   logo?: string;
@@ -46,37 +41,25 @@ interface LayoutContentProps {
   children: React.ReactNode;
   cinzelVariable: string;
   poppinsVariable: string;
+  featuredPost?: Post;
+  posts?: Post[];
+  headerData?: HeaderSettings | null;
+  heroData?: HeroSettings | null;
+  topicsData?: TopicsSection | null;
 }
 
 export function LayoutContent({
   children,
   cinzelVariable,
   poppinsVariable,
+  featuredPost,
+  posts,
+  headerData,
+  heroData,
+  topicsData,
 }: LayoutContentProps) {
   const pathname = usePathname();
   const isStudioRoute = pathname?.startsWith("/studio");
-  const [headerData, setHeaderData] = useState<HeaderSettings | null>(null);
-  const [heroData, setHeroData] = useState<HeroSettings | null>(null);
-  const [topicsData, setTopicsData] = useState<TopicsSection | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [headerResult, heroResult, topicsResult] = await Promise.all([
-          client.fetch(headerSettingsQuery),
-          client.fetch(heroSectionQuery),
-          client.fetch(topicsSectionQuery),
-        ]);
-        setHeaderData(headerResult);
-        setHeroData(heroResult);
-        setTopicsData(topicsResult);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className={`${cinzelVariable} ${poppinsVariable} font-body`}>
@@ -106,6 +89,26 @@ export function LayoutContent({
             />
           )}
         </>
+      )}
+      {!isStudioRoute && posts && (
+        <div className="container mx-auto mt-10 px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <BlogCard
+                key={post._id}
+                post={post}
+                size={
+                  post.displaySize === "wide" ? CardSize.WIDE : CardSize.MEDIUM
+                }
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {!isStudioRoute && featuredPost && (
+        <div className="container mx-auto px-4 py-12">
+          <BlogCard post={featuredPost} size={CardSize.LARGE} />
+        </div>
       )}
       {children}
     </div>
