@@ -6,6 +6,8 @@ import postType from "./postType";
 import authorType from "./authorType";
 import headerSettings from "./headerSetting";
 import hero from "./hero";
+import topicCardType from "./topicCardType";
+import topic from "./topicType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -15,5 +17,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     authorType,
     headerSettings,
     hero,
+    topicCardType,
+    topic,
   ],
 };

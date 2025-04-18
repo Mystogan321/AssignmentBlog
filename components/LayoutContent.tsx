@@ -5,8 +5,13 @@ import Header from "@/components/Header";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity.client";
-import { headerSettingsQuery, heroSectionQuery } from "@/sanity/lib/quries";
+import {
+  headerSettingsQuery,
+  heroSectionQuery,
+  topicsSectionQuery,
+} from "@/sanity/lib/quries";
 import Hero from "@/components/Hero";
+import Topics from "@/components/Topic/topic";
 
 interface HeaderSettings {
   logo?: string;
@@ -20,6 +25,21 @@ interface HeroSettings {
   highlightedText: string;
   content: string;
   backgroundImage: string;
+}
+
+interface TopicsSection {
+  title: string;
+  topicCards: TopicCardData[];
+}
+
+interface TopicCardData {
+  _id: string;
+  title: string;
+  buttonText: string;
+  image: any;
+  slug: {
+    current: string;
+  };
 }
 
 interface LayoutContentProps {
@@ -37,16 +57,19 @@ export function LayoutContent({
   const isStudioRoute = pathname?.startsWith("/studio");
   const [headerData, setHeaderData] = useState<HeaderSettings | null>(null);
   const [heroData, setHeroData] = useState<HeroSettings | null>(null);
+  const [topicsData, setTopicsData] = useState<TopicsSection | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [headerResult, heroResult] = await Promise.all([
+        const [headerResult, heroResult, topicsResult] = await Promise.all([
           client.fetch(headerSettingsQuery),
           client.fetch(heroSectionQuery),
+          client.fetch(topicsSectionQuery),
         ]);
         setHeaderData(headerResult);
         setHeroData(heroResult);
+        setTopicsData(topicsResult);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -73,6 +96,13 @@ export function LayoutContent({
               highlightedText={heroData.highlightedText}
               content={heroData.content}
               backgroundImage={heroData.backgroundImage}
+            />
+          )}
+          {topicsData && (
+            <Topics
+              title={topicsData.title}
+              topicCards={topicsData.topicCards}
+              onCardClick={(slug) => console.log(`Navigating to ${slug}`)}
             />
           )}
         </>

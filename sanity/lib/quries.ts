@@ -1,5 +1,6 @@
 // lib/sanity.queries.ts
 import { groq } from "next-sanity";
+import { client } from "@/lib/sanity.client";
 
 // Fetch all post slugs
 export const postPathsQuery = groq`
@@ -66,5 +67,31 @@ export const heroSectionQuery = groq`
     highlightedText,
     content,
     "backgroundImage": backgroundImage.asset->url
+  }
+`;
+
+export const topicCardsQuery = `*[_type == "topicCard"] {
+  _id,
+  title,
+  buttonText,
+  image,
+  slug
+}`;
+
+export async function getTopicCards() {
+  const topicCards = await client.fetch(topicCardsQuery);
+  return topicCards;
+}
+
+export const topicsSectionQuery = groq`
+  *[_type == "topicsSection"][0] {
+    title,
+    topicCards[]-> {
+      _id,
+      title,
+      buttonText,
+      image,
+      slug
+    }
   }
 `;
