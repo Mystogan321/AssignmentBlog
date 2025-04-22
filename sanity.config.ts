@@ -38,7 +38,7 @@ export const structure: StructureResolver = (
       S.divider(), // Divider between singletons and lists
 
       // --- Your existing list items ---
-      S.documentTypeListItem("post").title("Posts"),
+      // S.documentTypeListItem("post").title("Posts"),
       S.documentTypeListItem("category").title("Categories"),
       S.documentTypeListItem("author").title("Authors"),
 

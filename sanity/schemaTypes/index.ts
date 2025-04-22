@@ -8,6 +8,8 @@ import headerSettings from "./headerSetting";
 import hero from "./hero";
 import topicCardType from "./topicCardType";
 import topic from "./topicType";
+import layoutType from "./pageLayoutType";
+import sidebarWidget from "./sideBarWidget";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -19,5 +21,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     hero,
     topicCardType,
     topic,
+    layoutType,
+    sidebarWidget,
   ],
 };

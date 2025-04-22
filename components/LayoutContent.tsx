@@ -5,8 +5,7 @@ import Header from "@/components/Header";
 import { Search } from "lucide-react";
 import Hero from "@/components/Hero";
 import Topics from "@/components/Topic/topic";
-import BlogCard, { CardSize } from "@/components/BlogCard";
-import { Post } from "@/components/BlogCard";
+import PageLayout from "./layout";
 
 interface HeaderSettings {
   logo?: string;
@@ -41,8 +40,6 @@ interface LayoutContentProps {
   children: React.ReactNode;
   cinzelVariable: string;
   poppinsVariable: string;
-  featuredPost?: Post;
-  posts?: Post[];
   headerData?: HeaderSettings | null;
   heroData?: HeroSettings | null;
   topicsData?: TopicsSection | null;
@@ -52,8 +49,6 @@ export function LayoutContent({
   children,
   cinzelVariable,
   poppinsVariable,
-  featuredPost,
-  posts,
   headerData,
   heroData,
   topicsData,
@@ -88,37 +83,12 @@ export function LayoutContent({
               onCardClick={(slug) => console.log(`Navigating to ${slug}`)}
             />
           )}
+
+        
+          <PageLayout />
         </>
       )}
-      {!isStudioRoute && posts && (
-        <div className="container mx-auto mt-10 px-4 py-12">
-          <div className="flex flex-col gap-6">
-            {posts.map((post) => {
-              // Determine the card size based on post.displaySize
-              let cardSize = CardSize.MEDIUM; // Default to medium
-              if (post.displaySize === "large") {
-                cardSize = CardSize.LARGE;
-              } else if (post.displaySize === "wide") {
-                cardSize = CardSize.WIDE;
-              }
-              // If displaySize is explicitly "medium" or undefined/null, it defaults to MEDIUM anyway.
 
-              return (
-                <BlogCard
-                  key={post._id}
-                  post={post}
-                  size={cardSize} // Pass the determined size
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
-      {!isStudioRoute && featuredPost && (
-        <div className="container mx-auto px-4 py-12">
-          <BlogCard post={featuredPost} size={CardSize.LARGE} />
-        </div>
-      )}
       {children}
     </div>
   );

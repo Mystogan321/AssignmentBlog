@@ -1,4 +1,3 @@
-// components/BlogCard.tsx
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -28,10 +27,10 @@ export type Post = {
   slug: {
     current: string;
   };
-  mainImage?: SanityImage;
+  mainImage?: SanityImage | string;
   excerpt?: string;
   publishedAt: string;
-  author?: Author;
+  author?: Author | string;
   categories?: Category[];
   specialTag?: string;
   callToActionText?: string;
@@ -77,7 +76,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
   // Style variations based on card size
   const cardStyles = {
     [CardSize.LARGE]: {
-      container: "max-w-[900px] min-h-[680px] flex flex-col rounded-3xl",
+      container: "max-w-[1000px] min-h-[680px] flex flex-col rounded-3xl",
       imageContainer: "w-full h-[450px] relative rounded-3xl overflow-hidden",
       content: "p-8",
       titleClass: "text-3xl font-bold mb-3",
@@ -89,7 +88,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
       titleClass: "text-2xl font-bold mb-3",
     },
     [CardSize.WIDE]: {
-      container: "max-w-[900px] min-h-[300px] flex flex-row rounded-3xl",
+      container: "max-w-[10000px] min-h-[300px] flex flex-row rounded-3xl",
       imageContainer: "w-1/2 h-auto relative rounded-l-3xl overflow-hidden",
       content: "p-6 w-1/2",
       titleClass: "text-2xl font-bold mb-2",
@@ -97,15 +96,52 @@ const BlogCard: React.FC<BlogCardProps> = ({
   };
 
   const styles = cardStyles[size] || cardStyles[CardSize.MEDIUM];
-  
-  // Function to get image URL safely
-  const getImageUrl = (image: SanityImage) => {
+
+  // Enhanced function to get image URL safely, handling both formats
+  const getImageUrl = (image: any): string => {
     try {
-      return urlFor(image).width(1200).url();
+      // If image is a string (direct URL from GROQ)
+      if (typeof image === 'string') {
+        return image;
+      }
+      
+      // If image already has a direct URL
+      if (image?.asset?.url) {
+        return image.asset.url;
+      }
+      
+      // If we need to use urlFor to generate the URL
+      if (image?.asset?._id) {
+        return urlFor(image).width(1200).url();
+      }
+      
+      // Fallback
+      return "/placeholder-image.jpg";
     } catch (error) {
       console.error("Error generating image URL:", error);
       return "/placeholder-image.jpg"; // Fallback image path
     }
+  };
+
+  // Enhanced function to handle author data
+  const getAuthorName = (author: any): string => {
+    if (typeof author === 'string') {
+      return author;
+    }
+    return author?.name || 'Anonymous';
+  };
+
+  // Enhanced function to get author image
+  const getAuthorImageUrl = (author: any): string | null => {
+    if (typeof author === 'string') {
+      return null;
+    }
+    
+    if (author?.image) {
+      return getImageUrl(author.image);
+    }
+    
+    return null;
   };
 
   return (
@@ -115,7 +151,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
       {/* Image */}
       {size === CardSize.WIDE ? (
         <div className={styles.imageContainer}>
-          {mainImage?.asset && (
+          {mainImage && (
             <div className="relative w-full h-full min-h-[300px]">
               <Image
                 src={getImageUrl(mainImage)}
@@ -136,7 +172,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
         </div>
       ) : (
         <div className={styles.imageContainer}>
-          {mainImage?.asset && (
+          {mainImage && (
             <Image
               src={getImageUrl(mainImage)}
               alt={title || "Blog post image"}
@@ -159,11 +195,11 @@ const BlogCard: React.FC<BlogCardProps> = ({
       <div className={`${styles.content} flex flex-col flex-grow`}>
         <div className="flex items-center space-x-3 mb-5">
           {/* Author Avatar */}
-          {author?.image?.asset && (
+          {author && getAuthorImageUrl(author) && (
             <div className="w-10 h-10 rounded-full overflow-hidden relative">
               <Image
-                src={getImageUrl(author.image)}
-                alt={author.name || "Author"}
+                src={getAuthorImageUrl(author)!}
+                alt={getAuthorName(author) || "Author"}
                 width={40}
                 height={40}
                 className="object-cover"
@@ -174,7 +210,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
           <div className="flex flex-row items-center flex-grow">
             {/* Author Name */}
             <p className="text-base text-gray-500 font-medium mr-4">
-              {author?.name}
+              {author ? getAuthorName(author) : ''}
             </p>
 
             {/* Publication Date */}

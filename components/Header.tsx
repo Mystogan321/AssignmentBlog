@@ -64,7 +64,7 @@ const Header = ({
 
   return (
     <Container>
-      <header className="fixed top-0 left-0 w-full py-4 bg-white z-40 border-b border-gray-200">
+      <header className="fixed top-0 left-0 w-full py-4 px-4 bg-white z-40 border-b border-gray-200">
         <div className="container mx-auto flex items-center justify-between px-6">
           {/* Logo */}
           <div className="flex items-center">
