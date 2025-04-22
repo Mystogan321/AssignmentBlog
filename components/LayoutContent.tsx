@@ -10,7 +10,7 @@ import { Post } from "@/components/BlogCard";
 
 interface HeaderSettings {
   logo?: string;
-  navigationLinks: Array<{ label: string; href: string }>;
+  navigationLinks: Array<{ label: string; slug: { current: string } }>;
   contactButtonLabel: string;
 }
 
@@ -92,16 +92,25 @@ export function LayoutContent({
       )}
       {!isStudioRoute && posts && (
         <div className="container mx-auto mt-10 px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <BlogCard
-                key={post._id}
-                post={post}
-                size={
-                  post.displaySize === "wide" ? CardSize.WIDE : CardSize.MEDIUM
-                }
-              />
-            ))}
+          <div className="flex flex-col gap-6">
+            {posts.map((post) => {
+              // Determine the card size based on post.displaySize
+              let cardSize = CardSize.MEDIUM; // Default to medium
+              if (post.displaySize === "large") {
+                cardSize = CardSize.LARGE;
+              } else if (post.displaySize === "wide") {
+                cardSize = CardSize.WIDE;
+              }
+              // If displaySize is explicitly "medium" or undefined/null, it defaults to MEDIUM anyway.
+
+              return (
+                <BlogCard
+                  key={post._id}
+                  post={post}
+                  size={cardSize} // Pass the determined size
+                />
+              );
+            })}
           </div>
         </div>
       )}

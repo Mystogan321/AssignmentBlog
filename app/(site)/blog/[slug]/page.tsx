@@ -1,10 +1,7 @@
-// app/(site)/page.tsx
-import Link from "next/link";
-import Image from "next/image";
+import { CardSize, Post } from "@/components/BlogCard";
+import BlogCard from "@/components/BlogCard";
 import { sanityClient } from "../../../../sanity/lib/client";
 import { homePagePostsQuery } from "../../../../sanity/lib/quries";
-import { Post } from "../../../../sanity/lib/types";
-import { urlFor } from "../../../../sanity/lib/image";
 
 async function getPosts(): Promise<Post[]> {
   return (await sanityClient.fetch(homePagePostsQuery)) || [];
@@ -18,41 +15,35 @@ export default async function HomePage() {
       <h1 className="text-3xl md:text-4xl font-bold mb-8">Latest Posts</h1>
 
       {posts.length ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map(
-            ({ _id, slug, title, mainImage, excerpt, author, publishedAt }) => (
-              <article
-                key={_id}
-                className="border rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post, index) => {
+            // You can determine size based on position or post properties
+            let size = CardSize.MEDIUM;
+            
+            // Example: Make first post large, second post wide, rest medium
+            if (index === 0) {
+              size = CardSize.LARGE;
+            } else if (index === 1) {
+              size = CardSize.WIDE;
+            }
+            
+            // Alternative: Use the post's own displaySize property if available
+            if (post.displaySize) {
+              size = post.displaySize as CardSize;
+            }
+            
+            return (
+              <div 
+                key={post._id}
+                className={`
+                  ${size === CardSize.LARGE ? 'col-span-2 row-span-2' : ''}
+                  ${size === CardSize.WIDE ? 'col-span-2' : ''}
+                `}
               >
-                {mainImage && urlFor(mainImage) && (
-                  <Link href={`/blog/${slug}`}>
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={urlFor(mainImage)!.url()}
-                        alt={title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        style={{ objectFit: "cover" }}
-                      />
-                    </div>
-                  </Link>
-                )}
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold mb-2 hover:text-blue-600 transition">
-                    <Link href={`/blog/${slug}`}>{title}</Link>
-                  </h2>
-                  {excerpt && (
-                    <p className="text-sm text-gray-600 mb-2">{excerpt}</p>
-                  )}
-                  <p className="text-xs text-gray-500">
-                    By {author?.name || "Unknown"} |{" "}
-                    {new Date(publishedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </article>
-            )
-          )}
+                <BlogCard post={post} size={size} />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <p className="text-center text-gray-500">No posts found.</p>

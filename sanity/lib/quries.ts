@@ -97,11 +97,11 @@ export const siteSettingsQuery = groq`
 `;
 
 export const headerSettingsQuery = groq`
-  *[_type == "headerSettings"][0]{
-    "logo": logo.asset->url,
+  *[_type == "headerSettings"][0] {
+    logo,
     navigationLinks[] {
       label,
-      "slug": slug.current
+      slug
     },
     contactButtonLabel
   }
@@ -188,6 +188,3 @@ export const allPostsQuery = `
     displaySize
   }
 `;
-
-
-

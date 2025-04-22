@@ -1,11 +1,14 @@
 import { client } from "@/lib/sanity.client";
 import { Post } from "@/components/BlogCard";
 import { LayoutContent } from "@/components/LayoutContent";
-import { allPostsQuery } from "@/sanity/lib/quries";
+import { allPostsQuery, headerSettingsQuery } from "@/sanity/lib/quries";
 
 export default async function Home() {
-  // Fetch all posts
-  const allPosts = await client.fetch(allPostsQuery);
+  // Fetch all posts and header data
+  const [allPosts, headerData] = await Promise.all([
+    client.fetch(allPostsQuery),
+    client.fetch(headerSettingsQuery),
+  ]);
 
   // Find a featured post (assuming it's marked with featured = true)
   const featuredPost =
@@ -19,8 +22,9 @@ export default async function Home() {
     <LayoutContent
       cinzelVariable="font-cinzel"
       poppinsVariable="font-poppins"
-      posts={regularPosts} // Pass the filtered posts
+      posts={regularPosts}
       featuredPost={featuredPost}
+      headerData={headerData}
     >
       <div className="min-h-screen">
         {/* Main content will be rendered through LayoutContent */}

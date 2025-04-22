@@ -77,60 +77,95 @@ const BlogCard: React.FC<BlogCardProps> = ({
   // Style variations based on card size
   const cardStyles = {
     [CardSize.LARGE]: {
-      container: "w-full max-w-[915px] h-[687px] flex flex-col rounded-3xl",
+      container: "max-w-[900px] min-h-[680px] flex flex-col rounded-3xl",
       imageContainer: "w-full h-[450px] relative rounded-3xl overflow-hidden",
       content: "p-8",
-      titleClass: "text-3xl font-bold mb-4",
+      titleClass: "text-3xl font-bold mb-3",
     },
     [CardSize.MEDIUM]: {
-      container: "w-full max-w-[441px] h-[660px] flex flex-col rounded-3xl",
+      container: "max-w-[440px] min-h-[600px] flex flex-col rounded-3xl",
       imageContainer: "w-full h-[320px] relative rounded-3xl overflow-hidden",
       content: "p-6",
       titleClass: "text-2xl font-bold mb-3",
     },
     [CardSize.WIDE]: {
-      container: "w-full max-w-[920px] h-[362px] flex flex-col rounded-3xl",
-      imageContainer: "w-full h-[200px] relative rounded-3xl overflow-hidden",
-      content: "p-6",
-      titleClass: "text-3xl font-bold mb-3 leading-tight",
+      container: "max-w-[900px] min-h-[300px] flex flex-row rounded-3xl",
+      imageContainer: "w-1/2 h-auto relative rounded-l-3xl overflow-hidden",
+      content: "p-6 w-1/2",
+      titleClass: "text-2xl font-bold mb-2",
     },
   };
 
   const styles = cardStyles[size] || cardStyles[CardSize.MEDIUM];
+  
+  // Function to get image URL safely
+  const getImageUrl = (image: SanityImage) => {
+    try {
+      return urlFor(image).width(1200).url();
+    } catch (error) {
+      console.error("Error generating image URL:", error);
+      return "/placeholder-image.jpg"; // Fallback image path
+    }
+  };
 
   return (
     <div
       className={`bg-white overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ${styles.container}`}
     >
       {/* Image */}
-      <div className={styles.imageContainer}>
-        {mainImage?.asset && (
-          <Image
-            src={urlFor(mainImage).width(1200).url()}
-            alt={title}
-            fill
-            className="object-cover"
-          />
-        )}
+      {size === CardSize.WIDE ? (
+        <div className={styles.imageContainer}>
+          {mainImage?.asset && (
+            <div className="relative w-full h-full min-h-[300px]">
+              <Image
+                src={getImageUrl(mainImage)}
+                alt={title || "Blog post image"}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
 
-        {/* Category Label */}
-        {categories && categories.length > 0 && (
-          <div className="absolute top-4 left-4 bg-black text-white px-6 py-2 rounded-full text-sm uppercase font-bold tracking-wider">
-            {categories[0].title}
-          </div>
-        )}
-      </div>
+          {/* Category Label */}
+          {categories && categories.length > 0 && (
+            <div className="absolute top-4 left-4 bg-black text-white px-6 py-2 rounded-full text-sm uppercase font-bold tracking-wider z-10">
+              {categories[0].title}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className={styles.imageContainer}>
+          {mainImage?.asset && (
+            <Image
+              src={getImageUrl(mainImage)}
+              alt={title || "Blog post image"}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+
+          {/* Category Label */}
+          {categories && categories.length > 0 && (
+            <div className="absolute top-4 left-4 bg-black text-white px-6 py-2 rounded-full text-sm uppercase font-bold tracking-wider">
+              {categories[0].title}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Content */}
       <div className={`${styles.content} flex flex-col flex-grow`}>
         <div className="flex items-center space-x-3 mb-5">
           {/* Author Avatar */}
           {author?.image?.asset && (
-            <div className="w-12 h-12 rounded-full overflow-hidden relative">
+            <div className="w-10 h-10 rounded-full overflow-hidden relative">
               <Image
-                src={urlFor(author.image).width(80).height(80).url()}
-                alt={author.name}
-                fill
+                src={getImageUrl(author.image)}
+                alt={author.name || "Author"}
+                width={40}
+                height={40}
                 className="object-cover"
               />
             </div>
