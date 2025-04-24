@@ -122,7 +122,7 @@ const HostWidget = () => {
 
       {/* Social Icons - with debugging */}
       {socialPlatforms.length > 0 ? (
-        <div className="flex space-x-4 justify-center">
+        <div className="flex  justify-center">
           {socialPlatforms.map(({ platform, url, icon }) => {
             console.log(`Rendering icon for ${platform}:`, icon); // Debugging
             return (
@@ -133,7 +133,7 @@ const HostWidget = () => {
                 rel="noopener noreferrer"
                 aria-label={`Visit ${platform}`}
               >
-                <div className="w-10 h-10 rounded-full bg-teal-400 flex items-center justify-center overflow-hidden">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
                   {icon ? (
                     <Image
                       src={icon}
