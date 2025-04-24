@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { client } from "@/lib/sanity.client";
 import { Post } from "@/components/BlogCard";
-import { LayoutContent } from "@/components/LayoutContent";
 import PageLayout from "@/components/layout";
 import {
   allPostsQuery,
@@ -12,7 +11,12 @@ import {
 } from "@/sanity/lib/quries";
 
 export default function Home() {
-  const [data, setData] = useState({
+  const [data, setData] = useState<{
+    allPosts: Post[];
+    headerData: null | any;
+    pageLayoutData: null | any;
+    isLoading: boolean;
+  }>({
     allPosts: [],
     headerData: null,
     pageLayoutData: null,
@@ -62,17 +66,9 @@ export default function Home() {
     : data.allPosts;
 
   return (
-    <LayoutContent
-      cinzelVariable="font-cinzel"
-      poppinsVariable="font-poppins"
-      posts={regularPosts}
-      featuredPost={featuredPost}
-      headerData={data.headerData}
-    >
-      <div className="min-h-screen">
-        {/* Pass the layout data to PageLayout */}
-        <PageLayout layoutData={data.pageLayoutData} />
-      </div>
-    </LayoutContent>
+    <div className="min-h-screen">
+      {/* Pass the layout data to PageLayout */}
+      <PageLayout layoutData={data.pageLayoutData || undefined} />
+    </div>
   );
 }

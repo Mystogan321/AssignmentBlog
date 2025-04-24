@@ -70,8 +70,8 @@ const TopRatedWidget = () => {
 
       <div className="top-rated-posts">
         {widgetData.posts.map((post) => (
-          <div 
-            key={post._id} 
+          <div
+            key={post._id}
             className="flex items-center gap-4 px-6 py-4 border-b border-gray-200 last:border-b-0"
           >
             <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded">

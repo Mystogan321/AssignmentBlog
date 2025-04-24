@@ -1,11 +1,7 @@
 // lib/types.ts
 import type { Image, PortableTextBlock, Slug } from "sanity";
 import { client } from "@/lib/sanity.client";
-import {
-  allPostsQuery,
-  postBySlugQuery,
-  postsByCategoryQuery,
-} from "./quries"; // Verify correct path
+import { allPostsQuery, postBySlugQuery, postsByCategoryQuery } from "./quries"; // Verify correct path
 
 export interface SanityImageWithAlt extends Image {
   alt?: string;
@@ -64,5 +60,3 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   return await client.fetch(postsByCategoryQuery, { categoryId });
 }
-
-

@@ -41,7 +41,7 @@ interface PageLayoutDataResolved {
   trendingPosts: Post[];
   stackedTitle?: string;
   stackedPosts: Post[];
-  sidebarContent?: any[]; 
+  sidebarContent?: any[];
 }
 
 const CustomWidget = ({ content }: { content: any }) => (
@@ -57,9 +57,7 @@ const TopRatedWidgetAdapter = ({
   title: string;
   posts?: Post[];
 }) => {
-
   const validPosts = posts?.filter((post) => post.mainImage) || [];
-
 
   const adaptedPosts = validPosts.map((post) => ({
     _id: post._id,

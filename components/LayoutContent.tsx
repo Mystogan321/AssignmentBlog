@@ -5,10 +5,8 @@ import Header from "@/components/Header";
 import { Search } from "lucide-react";
 import Hero from "@/components/Hero";
 import Topics from "@/components/Topic/topic";
-import { getTopRatedWidget } from "../sanity/lib/quries";
 import { useState, useEffect } from "react";
-import TopRatedWidget from "@/components/TopRatedWidget";
-import TopRatedWidgetAdapter from "@/components/TopRatedWidgetAdapter";
+import Footer from "@/components/Footer";
 
 interface HeaderSettings {
   logo?: string;
@@ -58,6 +56,7 @@ export function LayoutContent({
 }: LayoutContentProps) {
   const pathname = usePathname();
   const isStudioRoute = pathname?.startsWith("/studio");
+  const isHomePage = pathname === "/";
 
   return (
     <div className={`${cinzelVariable} ${poppinsVariable} font-body`}>
@@ -70,7 +69,7 @@ export function LayoutContent({
             onSearchClick={() => console.log("Search clicked")}
             SearchIcon={Search}
           />
-          {heroData && (
+          {isHomePage && heroData && (
             <Hero
               magazineTitle={heroData.magazineTitle}
               title={heroData.title}
@@ -79,7 +78,7 @@ export function LayoutContent({
               backgroundImage={heroData.backgroundImage}
             />
           )}
-          {topicsData && (
+          {isHomePage && topicsData && (
             <Topics
               title={topicsData.title}
               topicCards={topicsData.topicCards}
@@ -89,7 +88,9 @@ export function LayoutContent({
         </>
       )}
 
-      {children}
+      <main>{children}</main>
+
+      {!isStudioRoute && <Footer />}
     </div>
   );
 }

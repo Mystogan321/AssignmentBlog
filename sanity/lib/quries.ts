@@ -98,10 +98,10 @@ export const siteSettingsQuery = groq`
 
 export const headerSettingsQuery = groq`
   *[_type == "headerSettings"][0] {
-    "logoUrl": logo.asset->url,
+    "logo": logo.asset->url,
     navigationLinks[] {
       label,
-      slug
+      "slug": slug
     },
     contactButtonLabel
   }
@@ -355,6 +355,23 @@ export const getNewsletterWidgetData = async () => {
       subscriberCount,
       formEndpoint,
       active
+    }
+  `;
+
+  return client.fetch(query);
+};
+
+export const getFooterData = async () => {
+  const query = groq`
+    *[_type == "footerSettings"][0]{
+      "logo": logo.asset->url,
+      copyright,
+      ctaText,
+      socialLinks[]{
+        platform,
+        url,
+        "icon": icon.asset->url
+      }
     }
   `;
 

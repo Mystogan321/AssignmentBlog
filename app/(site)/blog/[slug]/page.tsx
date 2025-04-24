@@ -17,17 +17,16 @@ export default async function HomePage() {
       {posts.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post, index) => {
-            // You can determine size based on position or post properties
             let size = CardSize.MEDIUM;
             
-            // Example: Make first post large, second post wide, rest medium
+
             if (index === 0) {
               size = CardSize.LARGE;
             } else if (index === 1) {
               size = CardSize.WIDE;
             }
             
-            // Alternative: Use the post's own displaySize property if available
+
             if (post.displaySize) {
               size = post.displaySize as CardSize;
             }

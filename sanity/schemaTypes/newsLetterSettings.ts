@@ -9,7 +9,7 @@ export default {
       type: "string",
       description: "Main heading for your newsletter widget",
       initialValue: "Newsletter",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule: { required: () => string; }) => Rule.required(),
     },
     {
       name: "description",
@@ -54,7 +54,7 @@ export default {
       type: "number",
       description: "Number of current subscribers to display",
       initialValue: 36000,
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule: { min: (arg0: number) => number; }) => Rule.min(0),
     },
     {
       name: "formEndpoint",
