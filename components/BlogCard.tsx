@@ -101,20 +101,20 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const getImageUrl = (image: any): string => {
     try {
       // If image is a string (direct URL from GROQ)
-      if (typeof image === 'string') {
+      if (typeof image === "string") {
         return image;
       }
-      
+
       // If image already has a direct URL
       if (image?.asset?.url) {
         return image.asset.url;
       }
-      
+
       // If we need to use urlFor to generate the URL
       if (image?.asset?._id) {
         return urlFor(image).width(1200).url();
       }
-      
+
       // Fallback
       return "/placeholder-image.jpg";
     } catch (error) {
@@ -125,22 +125,22 @@ const BlogCard: React.FC<BlogCardProps> = ({
 
   // Enhanced function to handle author data
   const getAuthorName = (author: any): string => {
-    if (typeof author === 'string') {
+    if (typeof author === "string") {
       return author;
     }
-    return author?.name || 'Anonymous';
+    return author?.name || "Anonymous";
   };
 
   // Enhanced function to get author image
   const getAuthorImageUrl = (author: any): string | null => {
-    if (typeof author === 'string') {
+    if (typeof author === "string") {
       return null;
     }
-    
+
     if (author?.image) {
       return getImageUrl(author.image);
     }
-    
+
     return null;
   };
 
@@ -210,7 +210,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
           <div className="flex flex-row items-center flex-grow">
             {/* Author Name */}
             <p className="text-base text-gray-500 font-medium mr-4">
-              {author ? getAuthorName(author) : ''}
+              {author ? getAuthorName(author) : ""}
             </p>
 
             {/* Publication Date */}
@@ -227,12 +227,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
 
         {/* Title */}
         <h2 className={styles.titleClass}>
-          <Link
-            href={postUrl}
-            className="hover:text-blue-600 transition-colors"
-          >
             {title}
-          </Link>
         </h2>
 
         {/* Excerpt */}

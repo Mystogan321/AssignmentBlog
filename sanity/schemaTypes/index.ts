@@ -11,6 +11,7 @@ import topic from "./topicType";
 import layoutType from "./pageLayoutType";
 import sidebarWidget from "./sideBarWidget";
 import topRated from "./topRated";
+import newsletterSettings from "./newsLetterSettings";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -24,6 +25,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     topic,
     layoutType,
     sidebarWidget,
-    topRated
+    topRated,
+    newsletterSettings,
   ],
 };

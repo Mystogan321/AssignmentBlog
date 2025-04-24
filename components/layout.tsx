@@ -8,6 +8,8 @@ import Container from "./Container";
 import CategoryWidget from "./CategoryWidget";
 import TopRatedWidget from "./TopRatedWidget";
 import Link from "next/link";
+import HostWidget from "./HostWidget";
+import NewsletterWidget from "./NewsLetterWidget";
 
 interface SidebarWidget {
   _id: string;
@@ -39,25 +41,8 @@ interface PageLayoutDataResolved {
   trendingPosts: Post[];
   stackedTitle?: string;
   stackedPosts: Post[];
-  sidebarContent?: any[]; // Adjust based on the actual structure
+  sidebarContent?: any[]; 
 }
-
-const NewsletterWidget = () => (
-  <div className="bg-white rounded-lg shadow p-4 mb-6">
-    <h3 className="font-medium text-lg mb-4">Newsletter</h3>
-    <p className="text-sm text-gray-600 mb-3">Sign up to stay updated!</p>
-    <form className="flex flex-col gap-2">
-      <input
-        type="email"
-        placeholder="Your email address"
-        className="px-3 py-2 border rounded text-sm"
-      />
-      <button className="bg-teal-500 text-white rounded-full py-2 text-sm">
-        SUBSCRIBE
-      </button>
-    </form>
-  </div>
-);
 
 const CustomWidget = ({ content }: { content: any }) => (
   <div className="bg-white rounded-lg shadow p-4 mb-6">
@@ -72,10 +57,10 @@ const TopRatedWidgetAdapter = ({
   title: string;
   posts?: Post[];
 }) => {
-  // Filter out posts with undefined mainImage
+
   const validPosts = posts?.filter((post) => post.mainImage) || [];
 
-  // Convert Post[] to TopRatedPost[]
+
   const adaptedPosts = validPosts.map((post) => ({
     _id: post._id,
     title: post.title,
@@ -434,11 +419,9 @@ export const PageLayout = ({
                 ))
               ) : (
                 <>
+                  <HostWidget />
                   <NewsletterWidget />
-                  <TopRatedWidgetAdapter
-                    title="Top Rated"
-                    posts={sidebarPosts.slice(0, 5)}
-                  />
+                  <TopRatedWidget />
                   <CategoryWidget />
                 </>
               )}

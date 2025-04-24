@@ -245,7 +245,6 @@ export const sidebarItemsQuery = groq`
   }
 `;
 
-
 // lib/sanity.queries.ts
 // Add these queries to your existing file
 
@@ -257,7 +256,6 @@ export const categoriesWithPostCountQuery = groq`
     "postCount": count(*[_type == "post" && references(^._id)])
   } | order(title asc)
 `;
-
 
 export const categoryWidgetSettingsQuery = groq`
   *[_type == "widgetSettings" && _id == "categoryWidgetSettings"][0] {
@@ -272,7 +270,6 @@ export async function getCategoriesWithPostCount() {
 export async function getCategoryWidgetSettings() {
   return await client.fetch(categoryWidgetSettingsQuery);
 }
-
 
 export const topRatedWidgetQuery = groq`
   *[_type == "topRatedWidget"][0] {
@@ -301,7 +298,65 @@ export async function getTopRatedWidget() {
     // Return a default structure to avoid null errors
     return {
       title: "Top Rated",
-      posts: []
+      posts: [],
     };
   }
 }
+
+export const getHostWidgetData = async () => {
+  const query = groq`
+    *[_type == "author" && name == "Mallory Reyn"][0]{
+      name,
+      "slug": slug.current,
+      "image": image.asset->url,
+      bio,
+      hostLabel,
+      ctaText,
+      ctaLink,
+      socialIcons{
+        facebook{
+          url,
+          "icon": icon.asset->url
+        },
+        twitter{
+          url,
+          "icon": icon.asset->url
+        },
+        linkedin{
+          url,
+          "icon": icon.asset->url
+        },
+        youtube{
+          url,
+          "icon": icon.asset->url
+        },
+        instagram{
+          url,
+          "icon": icon.asset->url
+        }
+      }
+    }
+  `;
+
+  return client.fetch(query);
+};
+
+export const getNewsletterWidgetData = async () => {
+  const query = groq`
+    *[_type == "newsletterSettings"][0]{
+      title,
+      description,
+      inputPlaceholder,
+      buttonText,
+      successMessage,
+      footerText,
+      "backgroundColor": backgroundColor.hex,
+      "accentColor": accentColor.hex,
+      subscriberCount,
+      formEndpoint,
+      active
+    }
+  `;
+
+  return client.fetch(query);
+};
