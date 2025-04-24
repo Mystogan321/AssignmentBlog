@@ -244,3 +244,64 @@ export const sidebarItemsQuery = groq`
     content
   }
 `;
+
+
+// lib/sanity.queries.ts
+// Add these queries to your existing file
+
+export const categoriesWithPostCountQuery = groq`
+  *[_type == "category"] {
+    _id,
+    title,
+    "slug": slug.current,
+    "postCount": count(*[_type == "post" && references(^._id)])
+  } | order(title asc)
+`;
+
+
+export const categoryWidgetSettingsQuery = groq`
+  *[_type == "widgetSettings" && _id == "categoryWidgetSettings"][0] {
+    title
+  }
+`;
+
+export async function getCategoriesWithPostCount() {
+  return await client.fetch(categoriesWithPostCountQuery);
+}
+
+export async function getCategoryWidgetSettings() {
+  return await client.fetch(categoryWidgetSettingsQuery);
+}
+
+
+export const topRatedWidgetQuery = groq`
+  *[_type == "topRatedWidget"][0] {
+    title,
+    "posts": posts[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      mainImage {
+        asset->{
+          _id,
+          url
+        }
+      },
+      callToActionText
+    }
+  }
+`;
+
+export async function getTopRatedWidget() {
+  try {
+    const data = await client.fetch(topRatedWidgetQuery);
+    return data;
+  } catch (error) {
+    console.error("Error fetching top rated widget:", error);
+    // Return a default structure to avoid null errors
+    return {
+      title: "Top Rated",
+      posts: []
+    };
+  }
+}

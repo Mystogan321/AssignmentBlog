@@ -10,6 +10,7 @@ import topicCardType from "./topicCardType";
 import topic from "./topicType";
 import layoutType from "./pageLayoutType";
 import sidebarWidget from "./sideBarWidget";
+import topRated from "./topRated";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -23,5 +24,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     topic,
     layoutType,
     sidebarWidget,
+    topRated
   ],
 };

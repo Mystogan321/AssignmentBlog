@@ -5,6 +5,9 @@ import { client } from "@/lib/sanity.client";
 import { groq } from "next-sanity";
 import BlogCard, { CardSize, Post } from "@/components/BlogCard";
 import Container from "./Container";
+import CategoryWidget from "./CategoryWidget";
+import TopRatedWidget from "./TopRatedWidget";
+import Link from "next/link";
 
 interface SidebarWidget {
   _id: string;
@@ -56,58 +59,44 @@ const NewsletterWidget = () => (
   </div>
 );
 
-const TopRatedWidget = ({ posts }: { posts: Post[] }) => (
-  <div className="bg-white rounded-lg shadow p-4 mb-6">
-    <h3 className="font-medium text-lg mb-4">Top Rated</h3>
-    <div className="space-y-4">
-      {posts.map((post) => (
-        <div key={post._id} className="flex gap-3">
-          <div className="w-16 h-16 relative flex-shrink-0">
-            <img
-              src={
-                typeof post.mainImage === "string"
-                  ? post.mainImage
-                  : post.mainImage?.asset?.url || ""
-              }
-              alt={post.title}
-              className="object-cover w-full h-full rounded"
-            />
-          </div>
-          <div>
-            <h4 className="font-medium text-sm">{post.title}</h4>
-            <p className="text-xs text-teal-500">
-              {post.callToActionText || "READ MORE"}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const CategoriesWidget = () => (
-  <div className="bg-white rounded-lg shadow p-4 mb-6">
-    <h3 className="font-medium text-lg mb-4">Categories</h3>
-    <div className="space-y-2">
-      {["Fashion", "Lifestyle", "Self Care", "Mental Health"].map(
-        (category, index) => (
-          <div key={category} className="flex items-center justify-between">
-            <span className="text-sm">{category}</span>
-            <span className="bg-teal-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
-              {index + 1}
-            </span>
-          </div>
-        )
-      )}
-    </div>
-  </div>
-);
-
 const CustomWidget = ({ content }: { content: any }) => (
   <div className="bg-white rounded-lg shadow p-4 mb-6">
     <div dangerouslySetInnerHTML={{ __html: content }} />
   </div>
 );
+
+const TopRatedWidgetAdapter = ({
+  title,
+  posts,
+}: {
+  title: string;
+  posts?: Post[];
+}) => {
+  // Filter out posts with undefined mainImage
+  const validPosts = posts?.filter((post) => post.mainImage) || [];
+
+  // Convert Post[] to TopRatedPost[]
+  const adaptedPosts = validPosts.map((post) => ({
+    _id: post._id,
+    title: post.title,
+    slug: post.slug,
+    mainImage: {
+      asset: {
+        _id:
+          typeof post.mainImage === "string"
+            ? post.mainImage
+            : post.mainImage?.asset?._id || "",
+        url:
+          typeof post.mainImage === "string"
+            ? post.mainImage
+            : post.mainImage?.asset?.url || "",
+      },
+    },
+    callToActionText: post.callToActionText,
+  }));
+
+  return <TopRatedWidget data={{ title, posts: adaptedPosts }} />;
+};
 
 const SidebarWidgetRenderer = ({
   widgetType,
@@ -122,9 +111,9 @@ const SidebarWidgetRenderer = ({
     case "newsletter":
       return <NewsletterWidget />;
     case "topRated":
-      return <TopRatedWidget posts={posts || []} />;
+      return <TopRatedWidgetAdapter title="Top Rated" posts={posts || []} />;
     case "categories":
-      return <CategoriesWidget />;
+      return <CategoryWidget />;
     case "custom":
       return <CustomWidget content={content} />;
     default:
@@ -433,7 +422,7 @@ export const PageLayout = ({
 
           {/* Sidebar - decreased width and added top margin */}
           <div className="w-full lg:w-1/4 mt-8 lg:mt-0">
-            <div className="sticky top-6">
+            <div className=" top-6">
               {sidebarWidgets.length > 0 ? (
                 sidebarWidgets.map((widget) => (
                   <SidebarWidgetRenderer
@@ -446,8 +435,11 @@ export const PageLayout = ({
               ) : (
                 <>
                   <NewsletterWidget />
-                  <TopRatedWidget posts={sidebarPosts.slice(0, 5)} />
-                  <CategoriesWidget />
+                  <TopRatedWidgetAdapter
+                    title="Top Rated"
+                    posts={sidebarPosts.slice(0, 5)}
+                  />
+                  <CategoryWidget />
                 </>
               )}
             </div>

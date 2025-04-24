@@ -5,6 +5,10 @@ import Header from "@/components/Header";
 import { Search } from "lucide-react";
 import Hero from "@/components/Hero";
 import Topics from "@/components/Topic/topic";
+import { getTopRatedWidget } from "../sanity/lib/quries";
+import { useState, useEffect } from "react";
+import TopRatedWidget from "@/components/TopRatedWidget";
+import TopRatedWidgetAdapter from "@/components/TopRatedWidgetAdapter";
 
 interface HeaderSettings {
   logo?: string;
