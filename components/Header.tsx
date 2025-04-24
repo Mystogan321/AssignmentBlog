@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, LucideIcon } from "lucide-react";
-import Container from './Container';
+import Container from "./Container";
 import Link from "next/link";
-import { client } from "@/lib/sanity.client";
-import { headerSettingsQuery } from "../sanity/lib/quries";
 
 export interface NavLink {
   label: string;
@@ -24,41 +22,23 @@ export interface HeaderProps {
 
 const Header = ({
   logoSrc,
-  navLinks,
-  contactLabel,
+  navLinks = [],
+  contactLabel = "Contact Us",
   onSearchClick = () => {},
   SearchIcon = Search,
 }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [headerData, setHeaderData] = useState<{
-    logo?: { asset: { url: string } };
-    navigationLinks?: NavLink[];
-    contactButtonLabel?: string;
-  }>({});
-  
-  // Fetch header data from Sanity
-  useEffect(() => {
-    async function fetchHeaderData() {
-      try {
-        const data = await client.fetch(headerSettingsQuery);
-        setHeaderData(data);
-      } catch (error) {
-        console.error("Failed to fetch header data:", error);
-      }
-    }
-    
-    fetchHeaderData();
-  }, []);
-  
-  // Use Sanity data or props or defaults
-  const displayLogoSrc = headerData.logo?.asset?.url || logoSrc;
-  const displayNavLinks = navLinks || headerData.navigationLinks || [
-    { label: "Fashion", slug: { current: "fashion" } },
-    { label: "Lifestyle", slug: { current: "lifestyle" } },
-    { label: "Spiritual", slug: { current: "spiritual" } },
-    { label: "Mental Health", slug: { current: "mental-health" } },
-  ];
-  const displayContactLabel = contactLabel || headerData.contactButtonLabel || "Contact Us";
+
+  // Use default navigation links if none are provided
+  const displayNavLinks =
+    navLinks.length > 0
+      ? navLinks
+      : [
+          { label: "Fashion", slug: { current: "fashion" } },
+          { label: "Lifestyle", slug: { current: "lifestyle" } },
+          { label: "Spiritual", slug: { current: "spiritual" } },
+          { label: "Mental Health", slug: { current: "mental-health" } },
+        ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -68,8 +48,8 @@ const Header = ({
         <div className="container mx-auto flex items-center justify-between px-6">
           {/* Logo */}
           <div className="flex items-center">
-            {displayLogoSrc ? (
-              <img src={displayLogoSrc} alt="LUX VENTUS" className="h-10" />
+            {logoSrc ? (
+              <img src={logoSrc} alt="LUX VENTUS" className="h-10" />
             ) : (
               <div className="font-cinzel text-3xl tracking-wider font-bold">
                 LUX <span className="text-[#4CE0D7]">VENTUS</span>
@@ -98,7 +78,7 @@ const Header = ({
                 href="/contact"
                 className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors text-base font-Poppins font-bold"
               >
-                {displayContactLabel}
+                {contactLabel}
               </Link>
               <button
                 onClick={onSearchClick}
@@ -109,7 +89,7 @@ const Header = ({
               </button>
             </div>
           </div>
-          
+
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-4">
             <button
@@ -135,8 +115,8 @@ const Header = ({
         {isMenuOpen && (
           <div className="md:hidden fixed top-0 left-0 w-full h-full bg-white z-50 p-8 overflow-y-auto">
             <div className="flex justify-between items-center">
-              {displayLogoSrc ? (
-                <img src={displayLogoSrc} alt="LUX VENTUS" className="h-10" />
+              {logoSrc ? (
+                <img src={logoSrc} alt="LUX VENTUS" className="h-10" />
               ) : (
                 <div className="font-cinzel text-3xl tracking-wider font-bold">
                   LUX <span className="text-[#4CE0D7]">VENTUS</span>
@@ -180,7 +160,7 @@ const Header = ({
                 className="bg-[#4CE0D7] text-black px-8 py-3 rounded-full hover:opacity-80 transition-colors inline-block w-fit mt-6 text-base font-Poppins font-bold"
                 onClick={toggleMenu}
               >
-                {displayContactLabel}
+                {contactLabel}
               </Link>
             </nav>
           </div>

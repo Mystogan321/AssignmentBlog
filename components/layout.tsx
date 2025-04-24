@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity.client";
 import { groq } from "next-sanity";
@@ -25,6 +27,16 @@ interface PageLayoutData {
   stackedTitle?: string;
   stackedPosts: Post[];
   sidebarContent: SidebarItem[];
+}
+
+interface PageLayoutDataResolved {
+  title: string;
+  featuredPost?: Post;
+  trendingTitle: string;
+  trendingPosts: Post[];
+  stackedTitle?: string;
+  stackedPosts: Post[];
+  sidebarContent?: any[]; // Adjust based on the actual structure
 }
 
 const NewsletterWidget = () => (
@@ -120,22 +132,69 @@ const SidebarWidgetRenderer = ({
   }
 };
 
-export const PageLayout = () => {
+export const PageLayout = ({
+  layoutData,
+}: {
+  layoutData?: PageLayoutDataResolved;
+}) => {
   const [state, setState] = useState<{
-    layoutData: PageLayoutData | null;
+    fetchedLayoutData: PageLayoutDataResolved | null;
     sidebarWidgets: SidebarWidget[];
     sidebarPosts: Post[];
     loading: boolean;
+    error: string | null;
+    debugInfo: any;
   }>({
-    layoutData: null,
+    fetchedLayoutData: layoutData || null,
     sidebarWidgets: [],
     sidebarPosts: [],
-    loading: true,
+    loading: !layoutData, // If layoutData is provided, we're not loading
+    error: null,
+    debugInfo: null,
   });
 
   useEffect(() => {
+    // If layoutData is provided via props, don't fetch again
+    if (layoutData) {
+      return;
+    }
+
     const fetchLayoutData = async () => {
       try {
+        console.log("Fetching page layout data...");
+
+        // First, check if the pageLayout document type exists at all
+        const checkQuery = groq`*[_type == "pageLayout"]{_id, title, isActive}`;
+        const allLayouts = await client.fetch(checkQuery);
+        console.log("All pageLayout documents:", allLayouts);
+
+        if (!allLayouts || allLayouts.length === 0) {
+          console.error("No pageLayout documents found in Sanity");
+          setState((prev) => ({
+            ...prev,
+            loading: false,
+            error:
+              "No pageLayout documents exist in Sanity. You need to create at least one pageLayout document in the Sanity Studio.",
+            debugInfo: { allLayouts },
+          }));
+          return;
+        }
+
+        const activeLayouts = allLayouts.filter((l: any) => l.isActive);
+        if (activeLayouts.length === 0) {
+          console.error(
+            "No active pageLayout found - please set isActive=true on at least one layout"
+          );
+          setState((prev) => ({
+            ...prev,
+            loading: false,
+            error:
+              "No active pageLayout found. Please set isActive=true on at least one pageLayout document.",
+            debugInfo: { allLayouts, activeLayouts },
+          }));
+          return;
+        }
+
         const layoutQuery = groq`
           *[_type == "pageLayout" && isActive == true][0]{
             title,
@@ -179,6 +238,8 @@ export const PageLayout = () => {
         `;
 
         const layoutData = await client.fetch(layoutQuery);
+        console.log("Fetched layout data:", layoutData);
+
         let sidebarWidgets: SidebarWidget[] = [];
         let sidebarPosts: Post[] = [];
 
@@ -186,6 +247,8 @@ export const PageLayout = () => {
           const widgetRefs = layoutData.sidebarContent
             .filter((item: SidebarItem) => item._ref)
             .map((item: SidebarItem) => item._ref);
+
+          console.log("Widget refs:", widgetRefs);
 
           const widgetsQuery = groq`
             *[_id in $refs]{
@@ -200,6 +263,8 @@ export const PageLayout = () => {
           const widgetData = await client.fetch(widgetsQuery, {
             refs: widgetRefs,
           });
+          console.log("Widget data:", widgetData);
+
           sidebarWidgets = widgetData.filter(
             (item: any) => item._type === "sidebarWidget"
           );
@@ -209,32 +274,114 @@ export const PageLayout = () => {
         }
 
         setState({
-          layoutData,
+          fetchedLayoutData: layoutData,
           sidebarWidgets,
           sidebarPosts,
           loading: false,
+          error: null,
+          debugInfo: { layoutData, sidebarWidgets, sidebarPosts },
         });
       } catch (error) {
         console.error("Error fetching layout data:", error);
-        setState((prev) => ({ ...prev, loading: false }));
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Unknown error fetching layout data",
+          debugInfo: { error },
+        }));
       }
     };
 
     fetchLayoutData();
-  }, []);
+  }, [layoutData]);
 
-  const { layoutData, sidebarWidgets, sidebarPosts, loading } = state;
+  const {
+    fetchedLayoutData,
+    sidebarWidgets,
+    sidebarPosts,
+    loading,
+    error,
+    debugInfo,
+  } = state;
+
+  // Use either the fetched data or the provided props
+  const displayData = layoutData || fetchedLayoutData;
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
-  }
-
-  if (!layoutData) {
     return (
-      <div className="container mx-auto px-4 py-8">No active layout found</div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="p-4 bg-blue-50 rounded-lg">
+          <h2 className="text-xl font-bold mb-2">Loading page layout...</h2>
+          <p className="text-gray-600">Fetching data from Sanity...</p>
+        </div>
+      </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="p-4 bg-red-50 rounded-lg">
+          <h2 className="text-xl font-bold mb-2">Error Loading Layout</h2>
+          <p className="text-red-600">{error}</p>
+          <div className="mt-4">
+            <h3 className="font-semibold">Troubleshooting:</h3>
+            <ol className="list-decimal ml-5 mt-2 space-y-2">
+              <li>
+                Make sure you've created a "pageLayout" document in Sanity
+                Studio
+              </li>
+              <li>
+                Ensure that at least one pageLayout document has "isActive" set
+                to true
+              </li>
+              <li>
+                Check that your Sanity project ID and dataset name are correct
+              </li>
+            </ol>
+          </div>
+          {debugInfo && (
+            <details className="mt-4">
+              <summary className="cursor-pointer text-blue-600">
+                Debug Information
+              </summary>
+              <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
+                {JSON.stringify(debugInfo, null, 2)}
+              </pre>
+            </details>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!displayData) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="p-4 bg-yellow-50 rounded-lg">
+          <h2 className="text-xl font-bold mb-2">No Active Layout Found</h2>
+          <p className="text-gray-700">
+            There is no active page layout configuration in Sanity.
+          </p>
+          <div className="mt-4">
+            <h3 className="font-semibold">To fix this:</h3>
+            <ol className="list-decimal ml-5 mt-2 space-y-2">
+              <li>Go to your Sanity Studio</li>
+              <li>Create a new "Page Layout" document</li>
+              <li>Make sure to set "isActive" to true</li>
+              <li>Fill in the required fields (title, trending title)</li>
+              <li>Set featured, trending, and stacked posts as desired</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default content for when we have data
   return (
     <Container>
       <div className="container mt-24 mx-auto px-4">
@@ -242,23 +389,23 @@ export const PageLayout = () => {
           {/* Main content area - Increased width */}
           <div className="w-full lg:w-3/4">
             {/* Featured post - made larger */}
-            {layoutData.featuredPost && (
+            {displayData.featuredPost && (
               <div className="mb-12">
                 <BlogCard
-                  post={layoutData.featuredPost}
+                  post={displayData.featuredPost}
                   size={CardSize.LARGE}
                 />
               </div>
             )}
 
             {/* Trending section with title */}
-            {layoutData.trendingPosts?.length > 0 && (
+            {displayData.trendingPosts?.length > 0 && (
               <div className="mb-12">
                 <h2 className="text-2xl font-semibold mb-6">
-                  {layoutData.trendingTitle || "Trending"}
+                  {displayData.trendingTitle || "Trending"}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {layoutData.trendingPosts.slice(0, 2).map((post) => (
+                  {displayData.trendingPosts.slice(0, 2).map((post) => (
                     <div key={post._id} className="col-span-1">
                       <BlogCard post={post} size={CardSize.MEDIUM} />
                     </div>
@@ -268,15 +415,15 @@ export const PageLayout = () => {
             )}
 
             {/* Stacked blog posts */}
-            {layoutData.stackedPosts?.length > 0 && (
+            {displayData.stackedPosts?.length > 0 && (
               <div>
-                {layoutData.stackedTitle && (
+                {displayData.stackedTitle && (
                   <h2 className="text-2xl font-semibold mb-6">
-                    {layoutData.stackedTitle}
+                    {displayData.stackedTitle}
                   </h2>
                 )}
                 <div className="space-y-8">
-                  {layoutData.stackedPosts.map((post) => (
+                  {displayData.stackedPosts.map((post) => (
                     <BlogCard key={post._id} post={post} size={CardSize.WIDE} />
                   ))}
                 </div>

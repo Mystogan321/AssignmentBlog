@@ -98,7 +98,7 @@ export const siteSettingsQuery = groq`
 
 export const headerSettingsQuery = groq`
   *[_type == "headerSettings"][0] {
-    logo,
+    "logoUrl": logo.asset->url,
     navigationLinks[] {
       label,
       slug
@@ -186,5 +186,61 @@ export const allPostsQuery = `
     },
     specialTag,
     displaySize
+  }
+`;
+
+// Fetch the active pageLayout (with post refs left as an array)
+export const activePageLayoutQuery = groq`
+  *[_type == "pageLayout" && isActive == true][0]{
+    title,
+    "featuredPost": featuredPost->{
+      _id, title, slug, excerpt, publishedAt, specialTag,
+      callToActionText, displaySize, isFeatured, layoutSection, displayOrder,
+      "author": author->{name, image{asset->url}},
+      "mainImage": mainImage.asset->url,
+      categories[]->{_id, title}
+    },
+    trendingTitle,
+    "trendingPosts": trendingPosts[]->{
+      _id, title, slug, excerpt, publishedAt, specialTag,
+      callToActionText, displaySize, isFeatured, layoutSection, displayOrder,
+      "author": author->{name, image{asset->url}},
+      "mainImage": mainImage.asset->url,
+      categories[]->{_id, title}
+    },
+    stackedTitle,
+    "stackedPosts": stackedPosts[]->{
+      _id, title, slug, excerpt, publishedAt, specialTag,
+      callToActionText, displaySize, isFeatured, layoutSection, displayOrder,
+      "author": author->{name, image{asset->url}},
+      "mainImage": mainImage.asset->url,
+      categories[]->{_id, title}
+    },
+    sidebarContent // array of { _ref } objects
+  }
+`;
+
+// Given an array of _id's in $refs, pull back both posts and widgets
+export const sidebarItemsQuery = groq`
+  *[_id in $refs]{
+    _id,
+    _type,
+    // Post fields
+    title,
+    slug,
+    excerpt,
+    publishedAt,
+    specialTag,
+    callToActionText,
+    displaySize,
+    isFeatured,
+    layoutSection,
+    displayOrder,
+    "author": author->{name, image{asset->url}},
+    "mainImage": mainImage.asset->url,
+    categories[]->{_id, title},
+    // Widget fields
+    widgetType,
+    content
   }
 `;

@@ -1,22 +1,65 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { client } from "@/lib/sanity.client";
 import { Post } from "@/components/BlogCard";
 import { LayoutContent } from "@/components/LayoutContent";
-import { allPostsQuery, headerSettingsQuery } from "@/sanity/lib/quries";
+import PageLayout from "@/components/layout";
+import {
+  allPostsQuery,
+  headerSettingsQuery,
+  activePageLayoutQuery,
+} from "@/sanity/lib/quries";
 
-export default async function Home() {
-  // Fetch all posts and header data
-  const [allPosts, headerData] = await Promise.all([
-    client.fetch(allPostsQuery),
-    client.fetch(headerSettingsQuery),
-  ]);
+export default function Home() {
+  const [data, setData] = useState({
+    allPosts: [],
+    headerData: null,
+    pageLayoutData: null,
+    isLoading: true,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch all posts, header data, and page layout
+        const [allPosts, headerData, pageLayoutData] = await Promise.all([
+          client.fetch(allPostsQuery),
+          client.fetch(headerSettingsQuery),
+          client.fetch(activePageLayoutQuery),
+        ]);
+
+        setData({
+          allPosts,
+          headerData,
+          pageLayoutData,
+          isLoading: false,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setData((prev) => ({ ...prev, isLoading: false }));
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (data.isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading page layout...</p>
+      </div>
+    );
+  }
 
   // Find a featured post (assuming it's marked with featured = true)
   const featuredPost =
-    allPosts.find((post: Post) => post.featured === true) || allPosts[0];
+    data.allPosts.find((post: Post) => post.featured === true) ||
+    data.allPosts[0];
 
-  const regularPosts = allPosts.filter(
-    (post: Post) => post._id !== featuredPost._id
-  );
+  const regularPosts = featuredPost
+    ? data.allPosts.filter((post: Post) => post._id !== featuredPost._id)
+    : data.allPosts;
 
   return (
     <LayoutContent
@@ -24,10 +67,11 @@ export default async function Home() {
       poppinsVariable="font-poppins"
       posts={regularPosts}
       featuredPost={featuredPost}
-      headerData={headerData}
+      headerData={data.headerData}
     >
       <div className="min-h-screen">
-        {/* Main content will be rendered through LayoutContent */}
+        {/* Pass the layout data to PageLayout */}
+        <PageLayout layoutData={data.pageLayoutData} />
       </div>
     </LayoutContent>
   );

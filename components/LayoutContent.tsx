@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import { Search } from "lucide-react";
 import Hero from "@/components/Hero";
 import Topics from "@/components/Topic/topic";
-import PageLayout from "./layout";
 
 interface HeaderSettings {
   logo?: string;
@@ -83,9 +82,6 @@ export function LayoutContent({
               onCardClick={(slug) => console.log(`Navigating to ${slug}`)}
             />
           )}
-
-        
-          <PageLayout />
         </>
       )}
 

@@ -34,7 +34,8 @@ export default defineType({
       name: "trendingTitle",
       title: "Trending Section Title",
       type: "string",
-      description: "Title for the section with two posts in a row (e.g. 'Trending')",
+      description:
+        "Title for the section with two posts in a row (e.g. 'Trending')",
       initialValue: "Trending",
     }),
     defineField({
@@ -48,14 +49,16 @@ export default defineType({
         },
       ],
       description: "These posts will appear in a two-column grid",
-      validation: (Rule) => Rule.max(2).warning("Recommended maximum of 2 posts for this section"),
+      validation: (Rule) =>
+        Rule.max(2).warning("Recommended maximum of 2 posts for this section"),
     }),
     // Stacked Posts Section (Three blog posts stacked)
     defineField({
       name: "stackedTitle",
       title: "Stacked Posts Section Title",
       type: "string",
-      description: "Optional title for the section with vertically stacked posts",
+      description:
+        "Optional title for the section with vertically stacked posts",
     }),
     defineField({
       name: "stackedPosts",
@@ -67,7 +70,8 @@ export default defineType({
           to: [{ type: "post" }],
         },
       ],
-      description: "These posts will appear stacked vertically one after another",
+      description:
+        "These posts will appear stacked vertically one after another",
     }),
     // Sidebar Content
     defineField({
