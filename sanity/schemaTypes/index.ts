@@ -13,6 +13,7 @@ import sidebarWidget from "./sideBarWidget";
 import topRated from "./topRated";
 import newsletterSettings from "./newsLetterSettings";
 import footerSettings from "./footerSettings";
+import mobilelayout from "./mobilelayout";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -29,5 +30,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     topRated,
     newsletterSettings,
     footerSettings,
+    mobilelayout
   ],
 };

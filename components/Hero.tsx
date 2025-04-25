@@ -25,7 +25,7 @@ const Hero: React.FC<HeroProps> = ({
           backgroundImage: `url(${backgroundImage || bgImg.src})`,
         }}
       >
-        <div className="absolute inset-0 flex flex-col justify-end p-12 pb-16">
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 md:justify-end md:items-start md:text-left md:p-12 md:pb-16">
           <span className="font-Poppins font- text-xs text-white tracking-[0.3em] uppercase mb-3">
             {magazineTitle}
           </span>

@@ -356,7 +356,7 @@ export const PageLayout = ({
   // Default content for when we have data
   return (
     <Container>
-      <div className="container mt-24 mx-auto px-4">
+      <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-12 py-12">
           {/* Main content area - Increased width */}
           <div className="w-full lg:w-3/4">
